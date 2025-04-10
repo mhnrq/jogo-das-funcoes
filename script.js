@@ -54,80 +54,79 @@ const functions = [
   { type: "logaritmica", text: "f(x) = log₂(5x)" },
 ];
 
-let counts = {
-  afim: 0,
-  quadratica: 0,
-  exponencial: 0,
-  logaritmica: 0
-};
+let afimCount = 0, quadraticaCount = 0, exponencialCount = 0, logaritmicaCount = 0;
 
 function shuffle(array) {
   return array.sort(() => Math.random() - 0.5);
 }
 
+function renderCards() {
+  const container = document.getElementById('cardContainer');
+  container.innerHTML = '';
+  shuffle(functions).forEach((func, i) => {
+    const card = document.createElement('div');
+    card.className = 'carta';
+    card.draggable = true;
+    card.textContent = func.text;
+    card.dataset.type = func.type;
+    card.id = 'card-' + i;
+
+    card.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', card.id);
+    });
+
+    container.appendChild(card);
+  });
+}
+
+document.querySelectorAll('.drop-area').forEach(area => {
+  area.addEventListener('dragover', e => e.preventDefault());
+  area.addEventListener('drop', e => {
+    e.preventDefault();
+    const id = e.dataTransfer.getData('text/plain');
+    const card = document.getElementById(id);
+    if (!card) return;
+    const draggedType = card.dataset.type;
+    const dropType = area.dataset.area;
+
+    if (draggedType === dropType) {
+      card.remove();
+      switch (dropType) {
+        case "afim": afimCount++; break;
+        case "quadratica": quadraticaCount++; break;
+        case "exponencial": exponencialCount++; break;
+        case "logaritmica": logaritmicaCount++; break;
+      }
+      updateCounts();
+      checkWin();
+    }
+  });
+});
+
 function updateCounts() {
-  document.getElementById("afimCount").textContent = `${counts.afim}/14`;
-  document.getElementById("quadraticaCount").textContent = `${counts.quadratica}/14`;
-  document.getElementById("exponencialCount").textContent = `${counts.exponencial}/11`;
-  document.getElementById("logaritmicaCount").textContent = `${counts.logaritmica}/11`;
+  document.getElementById('afimCount').textContent = `${afimCount}/14`;
+  document.getElementById('quadraticaCount').textContent = `${quadraticaCount}/14`;
+  document.getElementById('exponencialCount').textContent = `${exponencialCount}/11`;
+  document.getElementById('logaritmicaCount').textContent = `${logaritmicaCount}/11`;
 }
 
 function checkWin() {
-  const total = counts.afim + counts.quadratica + counts.exponencial + counts.logaritmica;
-  if (total === 50) {
+  if (afimCount + quadraticaCount + exponencialCount + logaritmicaCount === 50) {
     setTimeout(() => {
-      alert("Parabéns! Você finalizou o jogo!");
+      alert("Parabéns, você finalizou o jogo! Caso queira jogar novamente, clique no botão RESET.");
     }, 100);
   }
 }
 
 function resetGame() {
-  counts = { afim: 0, quadratica: 0, exponencial: 0, logaritmica: 0 };
+  afimCount = quadraticaCount = exponencialCount = logaritmicaCount = 0;
   updateCounts();
   renderCards();
 }
 
-function renderCards() {
-  const container = document.getElementById("cardContainer");
-  container.innerHTML = "";
-  shuffle(functions).forEach((func, i) => {
-    const card = document.createElement("div");
-    card.className = "carta";
-    card.textContent = func.text;
-    card.dataset.type = func.type;
-    container.appendChild(card);
-  });
-}
-
 renderCards();
-updateCounts();
 
-document.querySelectorAll(".drop-area").forEach(area => {
-  new Sortable(area, {
-    group: {
-      name: "shared",
-      pull: true,
-      put: function (to) {
-        return true;
-      }
-    },
-    onAdd: function (evt) {
-      const type = evt.item.dataset.type;
-      const dropType = area.dataset.area;
-
-      if (type === dropType) {
-        evt.item.remove();
-        counts[dropType]++;
-        updateCounts();
-        checkWin();
-      } else {
-        // volta ao container se for incorreto
-        document.getElementById("cardContainer").appendChild(evt.item);
-      }
-    }
-  });
-});
-
-new Sortable(document.getElementById("cardContainer"), {
-  group: "shared"
+new Sortable(document.getElementById('cardContainer'), {
+  animation: 150,
+  ghostClass: 'sortable-ghost'
 });
