@@ -54,21 +54,22 @@ const functions = [
   { type: "logaritmica", text: "f(x) = log₂(5x)" },
 ];
 
-function shuffle(array) {
+let cardContainer = document.getElementById("cardContainer");
+
+function embaralhar(array) {
   return array.sort(() => Math.random() - 0.5);
 }
 
 function renderCards() {
-  const container = document.getElementById("cardContainer");
-  container.innerHTML = "";
-  const shuffled = shuffle(functions);
-  shuffled.forEach((func, index) => {
+  cardContainer.innerHTML = "";
+  let embaralhadas = embaralhar(functions);
+  embaralhadas.forEach((funcao, index) => {
     const div = document.createElement("div");
     div.classList.add("card");
-    div.textContent = func.text;
-    div.setAttribute("data-tipo", func.type);
+    div.textContent = funcao.text;
+    div.setAttribute("data-tipo", funcao.type);
     div.setAttribute("id", `card-${index}`);
-    container.appendChild(div);
+    cardContainer.appendChild(div);
   });
 }
 
@@ -87,31 +88,32 @@ function configurarDropAreas() {
         } else {
           card.style.backgroundColor = "#ffcdd2";
         }
-        atualizarContadores();
+        atualizarContador();
       }
     });
   });
 
-  new Sortable(document.getElementById("cardContainer"), {
+  new Sortable(cardContainer, {
     group: "funcoes",
     animation: 150
   });
 }
 
-function atualizarContadores() {
+function atualizarContador() {
   const tipos = ["afim", "quadratica", "exponencial", "logaritmica"];
   tipos.forEach(tipo => {
     const area = document.querySelector(`.drop-area.${tipo}`);
     const count = area.querySelectorAll(`.card[data-tipo="${tipo}"]`).length;
-    const max = tipo === "afim" || tipo === "quadratica" ? 14 : 11;
-    document.getElementById(`${tipo}Count`).textContent = `${count}/${max}`;
+    document.getElementById(`${tipo}Count`).textContent = `${count}/${
+      tipo === "afim" || tipo === "quadratica" ? 14 : 11
+    }`;
   });
 }
 
 function resetGame() {
   renderCards();
   configurarDropAreas();
-  atualizarContadores();
+  atualizarContador();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
