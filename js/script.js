@@ -54,102 +54,71 @@ const functions = [
     { type: "logaritmica", text: "f(x) = log₂(5x)" },
   ];
 
-let afimCount = 0, quadraticaCount = 0, exponencialCount = 0, logaritmicaCount = 0;
-let selectedCard = null;
 
-function shuffle(array) {
+let cardContainer = document.getElementById("cardContainer");
+
+function embaralhar(array) {
   return array.sort(() => Math.random() - 0.5);
 }
 
-function renderCards() {
-  const container = document.getElementById('cardContainer');
-  container.innerHTML = '';
-  shuffle(functions).forEach((func, i) => {
-    const card = document.createElement('div');
-    card.className = 'carta';
-    card.textContent = func.text;
-    card.dataset.type = func.type;
-    card.id = 'card-' + i;
+function criarCartas() {
+  cardContainer.innerHTML = "";
+  let embaralhadas = embaralhar(funcoes);
+  embaralhadas.forEach((funcao, index) => {
+    const div = document.createElement("div");
+    div.classList.add("card");
+    div.textContent = funcao.texto;
+    div.setAttribute("data-tipo", funcao.tipo);
+    div.setAttribute("id", `card-${index}`);
+    cardContainer.appendChild(div);
+  });
+}
 
-    // DRAG & DROP
-    card.draggable = true;
-    card.addEventListener('dragstart', e => {
-      e.dataTransfer.setData('text/plain', card.id);
+function configurarDropAreas() {
+  const dropAreas = document.querySelectorAll(".drop-area");
+  dropAreas.forEach(area => {
+    new Sortable(area, {
+      group: "funcoes",
+      animation: 150,
+      onAdd: function (evt) {
+        const card = evt.item;
+        const tipoCorreto = area.dataset.area;
+        const tipoCard = card.dataset.tipo;
+        if (tipoCard === tipoCorreto) {
+          card.style.backgroundColor = "#c8e6c9";
+        } else {
+          card.style.backgroundColor = "#ffcdd2";
+        }
+        atualizarContador();
+      }
     });
+  });
 
-    // TOUCH/CELL
-    card.addEventListener('click', () => {
-      if (selectedCard) selectedCard.classList.remove('selecionada');
-      selectedCard = card;
-      card.classList.add('selecionada');
-    });
-
-    container.appendChild(card);
+  new Sortable(cardContainer, {
+    group: "funcoes",
+    animation: 150
   });
 }
 
-document.querySelectorAll('.drop-area').forEach(area => {
-  // DRAG & DROP
-  area.addEventListener('dragover', e => e.preventDefault());
-  area.addEventListener('drop', e => {
-    e.preventDefault();
-    const id = e.dataTransfer.getData('text/plain');
-    const card = document.getElementById(id);
-    processDrop(card, area);
+function atualizarContador() {
+  const tipos = ["afim", "quadratica", "exponencial", "logaritmica"];
+  tipos.forEach(tipo => {
+    const area = document.querySelector(`.drop-area.${tipo}`);
+    const count = area.querySelectorAll(`.card[data-tipo="${tipo}"]`).length;
+    document.getElementById(`${tipo}Count`).textContent = `${count}/${
+      tipo === "afim" || tipo === "quadratica" ? 14 : 11
+    }`;
   });
-
-  // TOUCH/CELL
-  area.addEventListener('click', () => {
-    if (selectedCard) {
-      processDrop(selectedCard, area);
-      selectedCard.classList.remove('selecionada');
-      selectedCard = null;
-    }
-  });
-});
-
-function processDrop(card, area) {
-  const draggedType = card.dataset.type;
-  const dropType = area.dataset.area;
-
-  if (draggedType === dropType) {
-    card.remove();
-    switch (dropType) {
-      case "afim": afimCount++; break;
-      case "quadratica": quadraticaCount++; break;
-      case "exponencial": exponencialCount++; break;
-      case "logaritmica": logaritmicaCount++; break;
-    }
-    updateCounts();
-    checkWin();
-  }
-}
-
-function updateCounts() {
-  document.getElementById('afimCount').textContent = `${afimCount}/14`;
-  document.getElementById('quadraticaCount').textContent = `${quadraticaCount}/14`;
-  document.getElementById('exponencialCount').textContent = `${exponencialCount}/11`;
-  document.getElementById('logaritmicaCount').textContent = `${logaritmicaCount}/11`;
-}
-
-function checkWin() {
-  if (afimCount + quadraticaCount + exponencialCount + logaritmicaCount === 50) {
-    setTimeout(() => {
-      alert("Parabéns, você finalizou o jogo! Caso queira jogar novamente, clique no botão RESET.");
-    }, 100);
-  }
 }
 
 function resetGame() {
-  afimCount = quadraticaCount = exponencialCount = logaritmicaCount = 0;
-  updateCounts();
-  renderCards();
+  criarCartas();
+  configurarDropAreas();
+  atualizarContador();
 }
 
-// Adiciona classe visual para toque
-document.addEventListener('DOMContentLoaded', () => {
-  const style = document.createElement('style');
-  style.innerHTML = `.selecionada { outline: 3px dashed #007bff; }`;
-  document.head.appendChild(style);
-  renderCards();
+document.addEventListener("DOMContentLoaded", () => {
+  criarCartas();
+  configurarDropAreas();
 });
+
