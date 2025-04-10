@@ -1,80 +1,68 @@
 body {
   font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
   margin: 0;
-  background: #f0f0f0;
+  padding: 0;
+  text-align: center;
 }
 
 header {
-  background: #333;
+  background-color: #4CAF50;
   color: white;
-  text-align: center;
-  padding: 20px;
-  font-size: 24px;
+  padding: 1rem;
+  font-size: 2rem;
 }
 
-.timer {
-  text-align: center;
-  font-size: 20px;
+#timer {
+  font-size: 1.5rem;
   margin: 10px 0;
+  color: #333;
 }
 
 .container {
   display: flex;
-  gap: 10px;
-  padding: 10px;
+  justify-content: center;
+  padding: 1rem;
 }
 
 .sidebar {
-  width: 250px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 1rem;
+  padding-right: 2rem;
 }
 
 .drop-area {
-  padding: 15px;
-  background: #fff;
   border: 2px dashed #ccc;
-  min-height: 100px;
-  position: relative;
-}
-
-.count {
-  position: absolute;
-  top: 5px;
-  right: 10px;
-  font-size: 12px;
-  color: #555;
-}
-
-.main {
-  flex: 1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: flex-start;
-  align-content: flex-start;
+  padding: 1rem;
+  width: 180px;
+  min-height: 120px;
+  background-color: #fff;
+  cursor: pointer;
 }
 
 .cards {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 0.5rem;
+  max-width: 500px;
+  justify-content: center;
 }
 
 .card {
-  background: white;
-  padding: 10px;
-  border: 1px solid #ccc;
+  background-color: #e0e0e0;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
   cursor: grab;
-  width: 150px;
-  text-align: center;
+  width: fit-content;
   user-select: none;
 }
 
 .reset-button {
+  margin-top: 20px;
   padding: 10px;
-  background: #ff5252;
+  font-weight: bold;
+  background-color: #d9534f;
   color: white;
   border: none;
   cursor: pointer;
