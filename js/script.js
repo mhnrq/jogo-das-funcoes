@@ -61,7 +61,7 @@ function embaralhar(array) {
   return array.sort(() => Math.random() - 0.5);
 }
 
-function criarCartas() {
+function renderCards() {
   cardContainer.innerHTML = "";
   let embaralhadas = embaralhar(funcoes);
   embaralhadas.forEach((funcao, index) => {
