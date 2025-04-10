@@ -56,18 +56,18 @@ const functions = [
 
 let cardContainer = document.getElementById("cardContainer");
 
-function embaralhar(array) {
+function shuffle(array) {
   return array.sort(() => Math.random() - 0.5);
 }
 
 function renderCards() {
   cardContainer.innerHTML = "";
-  let embaralhadas = embaralhar(functions);
-  embaralhadas.forEach((funcao, index) => {
+  const shuffled = shuffle([...functions]);
+  shuffled.forEach((func, index) => {
     const div = document.createElement("div");
     div.classList.add("card");
-    div.textContent = funcao.text;
-    div.setAttribute("data-tipo", funcao.type);
+    div.textContent = func.text;
+    div.setAttribute("data-tipo", func.type);
     div.setAttribute("id", `card-${index}`);
     cardContainer.appendChild(div);
   });
@@ -88,7 +88,6 @@ function configurarDropAreas() {
         } else {
           card.style.backgroundColor = "#ffcdd2";
         }
-        atualizarContador();
       }
     });
   });
@@ -99,21 +98,9 @@ function configurarDropAreas() {
   });
 }
 
-function atualizarContador() {
-  const tipos = ["afim", "quadratica", "exponencial", "logaritmica"];
-  tipos.forEach(tipo => {
-    const area = document.querySelector(`.drop-area.${tipo}`);
-    const count = area.querySelectorAll(`.card[data-tipo="${tipo}"]`).length;
-    document.getElementById(`${tipo}Count`).textContent = `${count}/${
-      tipo === "afim" || tipo === "quadratica" ? 14 : 11
-    }`;
-  });
-}
-
 function resetGame() {
   renderCards();
   configurarDropAreas();
-  atualizarContador();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
