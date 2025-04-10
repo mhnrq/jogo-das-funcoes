@@ -77,23 +77,35 @@ function configurarDropAreas() {
   const dropAreas = document.querySelectorAll(".drop-area");
   dropAreas.forEach(area => {
     new Sortable(area, {
-      group: "funcoes",
+      group: {
+        name: "funcoes",
+        pull: true,
+        put: false // Não permite puxar de volta daqui
+      },
       animation: 150,
       onAdd: function (evt) {
         const card = evt.item;
         const tipoCorreto = area.dataset.area;
         const tipoCard = card.dataset.tipo;
+
         if (tipoCard === tipoCorreto) {
-          card.style.backgroundColor = "#c8e6c9";
+          card.style.backgroundColor = "#c8e6c9"; // Verde claro
+          card.setAttribute("draggable", "false"); // Fixa a carta
         } else {
-          card.style.backgroundColor = "#ffcdd2";
+          card.remove(); // Remove da área errada
+          card.style.backgroundColor = "#ffcdd2"; // Vermelho claro
+          cardContainer.prepend(card); // Volta pro início
         }
       }
     });
   });
 
   new Sortable(cardContainer, {
-    group: "funcoes",
+    group: {
+      name: "funcoes",
+      pull: true,
+      put: true
+    },
     animation: 150
   });
 }
