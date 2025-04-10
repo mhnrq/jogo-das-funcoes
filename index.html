@@ -2,29 +2,37 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Jogo das Funções</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <h1>JOGO DAS FUNÇÕES</h1>
 
-  <header>JOGO DAS FUNÇÕES</header>
+  <div id="cardContainer"></div>
 
-  <div class="container">
-    <div class="sidebar">
-      <div class="drop-area afim" data-area="afim">Função Afim</div>
-      <div class="drop-area quadratica" data-area="quadratica">Função Quadrática</div>
-      <div class="drop-area exponencial" data-area="exponencial">Função Exponencial</div>
-      <div class="drop-area logaritmica" data-area="logaritmica">Função Logarítmica</div>
-      <button class="reset-button" onclick="resetGame()">RESET</button>
+  <div class="drop-areas">
+    <div class="drop-area" data-type="afim">
+      <h3>Função Afim</h3>
+      <div class="contador" id="contador-afim">0</div>
     </div>
-
-    <div class="main">
-      <div class="cards" id="cardContainer"></div>
+    <div class="drop-area" data-type="quadratica">
+      <h3>Função Quadrática</h3>
+      <div class="contador" id="contador-quadratica">0</div>
+    </div>
+    <div class="drop-area" data-type="exponencial">
+      <h3>Função Exponencial</h3>
+      <div class="contador" id="contador-exponencial">0</div>
+    </div>
+    <div class="drop-area" data-type="logaritmica">
+      <h3>Função Logarítmica</h3>
+      <div class="contador" id="contador-logaritmica">0</div>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-  <script src="js/script.js"></script>
+  <button onclick="resetGame()">RESET</button>
+
+  <script src="script.js"></script>
 </body>
 </html>
+
