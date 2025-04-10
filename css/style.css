@@ -40,6 +40,8 @@ header {
 .count {
   font-weight: normal;
   margin-top: 5px;
+  pointer-events: none;
+  user-select: none;
 }
 
 .main {
@@ -58,7 +60,7 @@ header {
   margin-bottom: 20px;
 }
 
-.card {
+.carta {
   width: 120px;
   height: 70px;
   background-color: white;
