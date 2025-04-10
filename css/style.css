@@ -30,6 +30,7 @@ header {
   font-weight: bold;
   text-align: center;
   border-radius: 6px;
+  min-height: 100px;
 }
 
 .afim { background-color: yellow; border: 3px solid black; }
@@ -40,8 +41,6 @@ header {
 .count {
   font-weight: normal;
   margin-top: 5px;
-  pointer-events: none;
-  user-select: none;
 }
 
 .main {
@@ -60,7 +59,7 @@ header {
   margin-bottom: 20px;
 }
 
-.carta {
+.card {
   width: 120px;
   height: 70px;
   background-color: white;
