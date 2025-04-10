@@ -63,7 +63,7 @@ function embaralhar(array) {
 
 function renderCards() {
   cardContainer.innerHTML = "";
-  let embaralhadas = embaralhar(funcoes);
+  let embaralhadas = embaralhar(functions);
   embaralhadas.forEach((funcao, index) => {
     const div = document.createElement("div");
     div.classList.add("card");
