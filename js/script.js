@@ -3,7 +3,6 @@ const functions = [
   { type: "afim", text: "f(x) = 2x" },
   { type: "afim", text: "f(x) = -9x" },
   { type: "afim", text: "f(x) = 6x - 14" },
-  { type: "afim", text: "f(x) = -√x" },
   { type: "afim", text: "f(x) = 5x - 6" },
   { type: "afim", text: "f(x) = 2x + 1" },
   { type: "afim", text: "f(x) = 3x - 1" },
@@ -11,8 +10,9 @@ const functions = [
   { type: "afim", text: "f(x) = -x + 5" },
   { type: "afim", text: "f(x) = 0,5x" },
   { type: "afim", text: "f(x) = 4x" },
-  { type: "afim", text: "f(x) = √x - 1" },
   { type: "afim", text: "f(x) = 2x" },
+  { type: "afim", text: "f(x) = √x - 1" },
+  { type: "afim", text: "f(x) = -√x" },
 
   { type: "quadratica", text: "f(x) = x²" },
   { type: "quadratica", text: "f(x) = x² + 1" },
@@ -54,22 +54,21 @@ const functions = [
   { type: "logaritmica", text: "f(x) = log₂(5x)" },
 ];
 
-let cardContainer = document.getElementById("cardContainer");
-
-function embaralhar(array) {
+function shuffle(array) {
   return array.sort(() => Math.random() - 0.5);
 }
 
 function renderCards() {
-  cardContainer.innerHTML = "";
-  let embaralhadas = embaralhar(functions);
-  embaralhadas.forEach((funcao, index) => {
+  const container = document.getElementById("cardContainer");
+  container.innerHTML = "";
+  const shuffled = shuffle(functions);
+  shuffled.forEach((func, index) => {
     const div = document.createElement("div");
-    div.classList.add("carta");
-    div.textContent = funcao.text;
-    div.setAttribute("data-tipo", funcao.type);
+    div.classList.add("card");
+    div.textContent = func.text;
+    div.setAttribute("data-tipo", func.type);
     div.setAttribute("id", `card-${index}`);
-    cardContainer.appendChild(div);
+    container.appendChild(div);
   });
 }
 
@@ -79,8 +78,6 @@ function configurarDropAreas() {
     new Sortable(area, {
       group: "funcoes",
       animation: 150,
-      filter: ".count",
-      preventOnFilter: false,
       onAdd: function (evt) {
         const card = evt.item;
         const tipoCorreto = area.dataset.area;
@@ -90,32 +87,31 @@ function configurarDropAreas() {
         } else {
           card.style.backgroundColor = "#ffcdd2";
         }
-        atualizarContador();
+        atualizarContadores();
       }
     });
   });
 
-  new Sortable(cardContainer, {
+  new Sortable(document.getElementById("cardContainer"), {
     group: "funcoes",
     animation: 150
   });
 }
 
-function atualizarContador() {
+function atualizarContadores() {
   const tipos = ["afim", "quadratica", "exponencial", "logaritmica"];
   tipos.forEach(tipo => {
     const area = document.querySelector(`.drop-area.${tipo}`);
-    const count = area.querySelectorAll(`.carta[data-tipo="${tipo}"]`).length;
-    document.getElementById(`${tipo}Count`).textContent = `${count}/${
-      tipo === "afim" || tipo === "quadratica" ? 14 : 11
-    }`;
+    const count = area.querySelectorAll(`.card[data-tipo="${tipo}"]`).length;
+    const max = tipo === "afim" || tipo === "quadratica" ? 14 : 11;
+    document.getElementById(`${tipo}Count`).textContent = `${count}/${max}`;
   });
 }
 
 function resetGame() {
   renderCards();
   configurarDropAreas();
-  atualizarContador();
+  atualizarContadores();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
