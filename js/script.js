@@ -1,8 +1,10 @@
 const functions = [
+  // Funções afins
   { type: "afim", text: "f(x) = x - 9" },
   { type: "afim", text: "f(x) = 2x" },
   { type: "afim", text: "f(x) = -9x" },
   { type: "afim", text: "f(x) = 6x - 14" },
+  { type: "afim", text: "f(x) = -√x" },
   { type: "afim", text: "f(x) = 5x - 6" },
   { type: "afim", text: "f(x) = 2x + 1" },
   { type: "afim", text: "f(x) = 3x - 1" },
@@ -10,10 +12,10 @@ const functions = [
   { type: "afim", text: "f(x) = -x + 5" },
   { type: "afim", text: "f(x) = 0,5x" },
   { type: "afim", text: "f(x) = 4x" },
-  { type: "afim", text: "f(x) = 2x" },
   { type: "afim", text: "f(x) = √x - 1" },
-  { type: "afim", text: "f(x) = -√x" },
+  { type: "afim", text: "f(x) = 2x" },
 
+  // Funções quadráticas
   { type: "quadratica", text: "f(x) = x²" },
   { type: "quadratica", text: "f(x) = x² + 1" },
   { type: "quadratica", text: "f(x) = x² - 4" },
@@ -29,6 +31,7 @@ const functions = [
   { type: "quadratica", text: "f(x) = 10x² + 4" },
   { type: "quadratica", text: "f(x) = -3x² - 8" },
 
+  // Funções exponenciais
   { type: "exponencial", text: "f(x) = eˣ" },
   { type: "exponencial", text: "f(x) = 2eˣ" },
   { type: "exponencial", text: "f(x) = e⁻ˣ + 2" },
@@ -41,6 +44,7 @@ const functions = [
   { type: "exponencial", text: "f(x) = e⁻ˣ" },
   { type: "exponencial", text: "f(x) = 2⁻ˣ" },
 
+  // Funções logarítmicas
   { type: "logaritmica", text: "f(x) = log₁₀(x)" },
   { type: "logaritmica", text: "f(x) = ln(x)" },
   { type: "logaritmica", text: "f(x) = log₂(x)" },
@@ -56,18 +60,18 @@ const functions = [
 
 let cardContainer = document.getElementById("cardContainer");
 
-function shuffle(array) {
+function embaralhar(array) {
   return array.sort(() => Math.random() - 0.5);
 }
 
 function renderCards() {
   cardContainer.innerHTML = "";
-  const shuffled = shuffle([...functions]);
-  shuffled.forEach((func, index) => {
+  let embaralhadas = embaralhar(functions);
+  embaralhadas.forEach((funcao, index) => {
     const div = document.createElement("div");
     div.classList.add("card");
-    div.textContent = func.text;
-    div.setAttribute("data-tipo", func.type);
+    div.textContent = funcao.text;
+    div.setAttribute("data-tipo", funcao.type);
     div.setAttribute("id", `card-${index}`);
     cardContainer.appendChild(div);
   });
@@ -75,26 +79,31 @@ function renderCards() {
 
 function configurarDropAreas() {
   const dropAreas = document.querySelectorAll(".drop-area");
+
   dropAreas.forEach(area => {
     new Sortable(area, {
       group: {
         name: "funcoes",
         pull: true,
-        put: false // Não permite puxar de volta daqui
+        put: function (to, from, dragEl) {
+          // Só permite inserir se a função estiver correta
+          return dragEl.dataset.tipo === area.dataset.area;
+        }
       },
       animation: 150,
       onAdd: function (evt) {
         const card = evt.item;
-        const tipoCorreto = area.dataset.area;
         const tipoCard = card.dataset.tipo;
+        const tipoCorreto = area.dataset.area;
 
         if (tipoCard === tipoCorreto) {
-          card.style.backgroundColor = "#c8e6c9"; // Verde claro
-          card.setAttribute("draggable", "false"); // Fixa a carta
+          card.style.backgroundColor = "#c8e6c9";
         } else {
-          card.remove(); // Remove da área errada
-          card.style.backgroundColor = "#ffcdd2"; // Vermelho claro
-          cardContainer.prepend(card); // Volta pro início
+          // Remove do drop errado e volta pro container
+          card.style.backgroundColor = "#ffcdd2";
+          setTimeout(() => {
+            cardContainer.appendChild(card);
+          }, 500);
         }
       }
     });
