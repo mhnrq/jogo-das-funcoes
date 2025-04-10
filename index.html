@@ -8,9 +8,12 @@
 <body>
 
 <header>JOGO DAS FUNÇÕES</header>
-<div class="timer" id="timer">Tempo: 0s</div>
 
-<div class="container">
+<div class="timer-container">
+  Tempo: <span id="timer">0s</span>
+</div>
+
+<div class="container" onclick="startTimer()">
   <div class="sidebar">
     <div class="drop-area afim" data-area="afim">Função Afim <div class="count" id="afimCount">0/14</div></div>
     <div class="drop-area quadratica" data-area="quadratica">Função Quadrática <div class="count" id="quadraticaCount">0/14</div></div>
@@ -27,4 +30,3 @@
 <script src="js/script.js"></script>
 </body>
 </html>
-
