@@ -1,5 +1,4 @@
 const functions = [
-  // Funções afins
   { type: "afim", text: "f(x) = x - 9" },
   { type: "afim", text: "f(x) = 2x" },
   { type: "afim", text: "f(x) = -9x" },
@@ -15,7 +14,6 @@ const functions = [
   { type: "afim", text: "f(x) = √x - 1" },
   { type: "afim", text: "f(x) = 2x" },
 
-  // Funções quadráticas
   { type: "quadratica", text: "f(x) = x²" },
   { type: "quadratica", text: "f(x) = x² + 1" },
   { type: "quadratica", text: "f(x) = x² - 4" },
@@ -31,7 +29,6 @@ const functions = [
   { type: "quadratica", text: "f(x) = 10x² + 4" },
   { type: "quadratica", text: "f(x) = -3x² - 8" },
 
-  // Funções exponenciais
   { type: "exponencial", text: "f(x) = eˣ" },
   { type: "exponencial", text: "f(x) = 2eˣ" },
   { type: "exponencial", text: "f(x) = e⁻ˣ + 2" },
@@ -44,7 +41,6 @@ const functions = [
   { type: "exponencial", text: "f(x) = e⁻ˣ" },
   { type: "exponencial", text: "f(x) = 2⁻ˣ" },
 
-  // Funções logarítmicas
   { type: "logaritmica", text: "f(x) = log₁₀(x)" },
   { type: "logaritmica", text: "f(x) = ln(x)" },
   { type: "logaritmica", text: "f(x) = log₂(x)" },
@@ -59,6 +55,11 @@ const functions = [
 ];
 
 let cardContainer = document.getElementById("cardContainer");
+let selectedCard = null;
+
+function isMobile() {
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
 
 function embaralhar(array) {
   return array.sort(() => Math.random() - 0.5);
@@ -73,6 +74,15 @@ function renderCards() {
     div.textContent = funcao.text;
     div.setAttribute("data-tipo", funcao.type);
     div.setAttribute("id", `card-${index}`);
+    if (isMobile()) {
+      div.addEventListener("click", () => {
+        selectedCard = div;
+        document.querySelectorAll(".card").forEach(card => {
+          card.classList.remove("selecionada");
+        });
+        div.classList.add("selecionada");
+      });
+    }
     cardContainer.appendChild(div);
   });
 }
@@ -81,50 +91,69 @@ function configurarDropAreas() {
   const dropAreas = document.querySelectorAll(".drop-area");
 
   dropAreas.forEach(area => {
-    new Sortable(area, {
-      group: {
-        name: "funcoes",
-        pull: true,
-        put: function (to, from, dragEl) {
-          // Só permite inserir se a função estiver correta
-          return dragEl.dataset.tipo === area.dataset.area;
-        }
-      },
-      animation: 150,
-      onAdd: function (evt) {
-        const card = evt.item;
-        const tipoCard = card.dataset.tipo;
-        const tipoCorreto = area.dataset.area;
+    const tipoCorreto = area.dataset.area;
 
-        if (tipoCard === tipoCorreto) {
-          card.style.backgroundColor = "#c8e6c9";
-        } else {
-          // Remove do drop errado e volta pro container
-          card.style.backgroundColor = "#ffcdd2";
-          setTimeout(() => {
-            cardContainer.appendChild(card);
-          }, 500);
+    if (isMobile()) {
+      area.addEventListener("click", () => {
+        if (selectedCard) {
+          const tipoCard = selectedCard.dataset.tipo;
+          if (tipoCard === tipoCorreto) {
+            selectedCard.style.backgroundColor = "#c8e6c9";
+          } else {
+            selectedCard.style.backgroundColor = "#ffcdd2";
+          }
+          area.appendChild(selectedCard);
+          selectedCard.classList.remove("selecionada");
+          selectedCard = null;
+          atualizarContador();
         }
-      }
-    });
+      });
+    } else {
+      new Sortable(area, {
+        group: "funcoes",
+        animation: 150,
+        onAdd: function (evt) {
+          const card = evt.item;
+          const tipoCard = card.dataset.tipo;
+          if (tipoCard === tipoCorreto) {
+            card.style.backgroundColor = "#c8e6c9";
+          } else {
+            card.style.backgroundColor = "#ffcdd2";
+          }
+          atualizarContador();
+        }
+      });
+    }
   });
 
-  new Sortable(cardContainer, {
-    group: {
-      name: "funcoes",
-      pull: true,
-      put: true
-    },
-    animation: 150
+  if (!isMobile()) {
+    new Sortable(cardContainer, {
+      group: "funcoes",
+      animation: 150
+    });
+  }
+}
+
+function atualizarContador() {
+  const tipos = ["afim", "quadratica", "exponencial", "logaritmica"];
+  tipos.forEach(tipo => {
+    const area = document.querySelector(`.drop-area.${tipo}`);
+    const count = area.querySelectorAll(`.card[data-tipo="${tipo}"]`).length;
+    document.getElementById(`${tipo}Count`).textContent = `${count}/${
+      tipo === "afim" || tipo === "quadratica" ? 14 : 11
+    }`;
   });
 }
 
 function resetGame() {
   renderCards();
   configurarDropAreas();
+  atualizarContador();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   renderCards();
   configurarDropAreas();
+  atualizarContador();
 });
+
