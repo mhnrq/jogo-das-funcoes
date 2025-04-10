@@ -9,7 +9,7 @@
 
 <header>JOGO DAS FUNÇÕES</header>
 <div id="cronometro">Tempo: 00:00</div>
-  
+
 <div class="container">
   <div class="sidebar">
     <div class="drop-area afim" data-area="afim">
@@ -36,7 +36,122 @@
   </div>
 </div>
 
-<script src="js/script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+const cardsData = [
+  { texto: "f(x) = 2x + 3", tipo: "afim" },
+  { texto: "f(x) = -x + 5", tipo: "afim" },
+  { texto: "f(x) = 3x - 1", tipo: "afim" },
+  { texto: "f(x) = x^2 + 2x + 1", tipo: "quadratica" },
+  { texto: "f(x) = x^2 - 4", tipo: "quadratica" },
+  { texto: "f(x) = 2x^2 + 3x + 1", tipo: "quadratica" },
+  { texto: "f(x) = 2^x", tipo: "exponencial" },
+  { texto: "f(x) = 3^x", tipo: "exponencial" },
+  { texto: "f(x) = (1/2)^x", tipo: "exponencial" },
+  { texto: "f(x) = log(x)", tipo: "logaritmica" },
+  { texto: "f(x) = log2(x)", tipo: "logaritmica" },
+  { texto: "f(x) = ln(x)", tipo: "logaritmica" }
+];
+
+let startTime = null;
+let timerInterval = null;
+let gameStarted = false;
+
+function iniciarCronometro() {
+  if (gameStarted) return;
+  gameStarted = true;
+  startTime = Date.now();
+
+  timerInterval = setInterval(() => {
+    const now = Date.now();
+    const diff = now - startTime;
+    const minutes = String(Math.floor(diff / 60000)).padStart(2, '0');
+    const seconds = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+    document.getElementById('cronometro').textContent = `Tempo: ${minutes}:${seconds}`;
+  }, 1000);
+}
+
+function pararCronometro() {
+  clearInterval(timerInterval);
+}
+
+function resetarCronometro() {
+  pararCronometro();
+  document.getElementById('cronometro').textContent = 'Tempo: 00:00';
+  startTime = null;
+  gameStarted = false;
+}
+
+function renderCards() {
+  const container = document.getElementById("cardContainer");
+  container.innerHTML = "";
+  const shuffled = cardsData.sort(() => 0.5 - Math.random());
+
+  shuffled.forEach((cardData, index) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.textContent = cardData.texto;
+    card.dataset.tipo = cardData.tipo;
+    card.draggable = true;
+
+    card.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("text/plain", index);
+      iniciarCronometro();
+    });
+
+    card.addEventListener("click", () => {
+      iniciarCronometro();
+    });
+
+    container.appendChild(card);
+  });
+}
+
+function updateCounts() {
+  ["afim", "quadratica", "exponencial", "logaritmica"].forEach((tipo) => {
+    const count = document.querySelectorAll(`.drop-area.${tipo} .card`).length;
+    document.getElementById(`${tipo}Count`).textContent = `${count}/${cardsData.filter(c => c.tipo === tipo).length}`;
+  });
+}
+
+function resetGame() {
+  document.querySelectorAll(".drop-area").forEach((area) => (area.innerHTML = area.getAttribute("data-area")));
+  document.getElementById("cardContainer").innerHTML = "";
+  renderCards();
+  updateCounts();
+  resetarCronometro();
+}
+
+function checkWin() {
+  const totalCards = cardsData.length;
+  const totalCorrect = Array.from(document.querySelectorAll(".drop-area")).reduce((acc, area) => {
+    const tipo = area.dataset.area;
+    const cards = area.querySelectorAll(".card");
+    return acc + Array.from(cards).filter(c => c.dataset.tipo === tipo).length;
+  }, 0);
+
+  if (totalCorrect === totalCards) {
+    pararCronometro();
+    alert("Parabéns! Você classificou todas as funções corretamente!");
+  }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  renderCards();
+
+  document.querySelectorAll(".drop-area").forEach((area) => {
+    area.addEventListener("dragover", (e) => e.preventDefault());
+    area.addEventListener("drop", (e) => {
+      e.preventDefault();
+      const index = e.dataTransfer.getData("text/plain");
+      const card = document.querySelectorAll(".card")[index];
+      if (card) area.appendChild(card);
+      updateCounts();
+      checkWin();
+    });
+  });
+});
+</script>
 </body>
 </html>
 
