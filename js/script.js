@@ -67,8 +67,8 @@ function renderCards() {
   embaralhadas.forEach((funcao, index) => {
     const div = document.createElement("div");
     div.classList.add("card");
-    div.textContent = funcao.texto;
-    div.setAttribute("data-tipo", funcao.tipo);
+    div.textContent = funcao.text;
+    div.setAttribute("data-tipo", funcao.type);
     div.setAttribute("id", `card-${index}`);
     cardContainer.appendChild(div);
   });
