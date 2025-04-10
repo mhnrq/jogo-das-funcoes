@@ -1,7 +1,10 @@
-const functions = [/* ... sua lista completa de funções aqui ... */];
+const functions = [
+  { type: "afim", text: "f(x) = x - 9" },
+  // ... [o resto das funções aqui igual ao original]
+];
 
-// Contadores
 let afimCount = 0, quadraticaCount = 0, exponencialCount = 0, logaritmicaCount = 0;
+let selectedCard = null;
 
 function shuffle(array) {
   return array.sort(() => Math.random() - 0.5);
@@ -13,30 +16,30 @@ function renderCards() {
   shuffle(functions).forEach((func, i) => {
     const card = document.createElement('div');
     card.className = 'carta';
-    card.draggable = true;
     card.textContent = func.text;
     card.dataset.type = func.type;
     card.id = 'card-' + i;
 
-    // Drag & Drop para desktop
+    // DRAG & DROP
+    card.draggable = true;
     card.addEventListener('dragstart', e => {
       e.dataTransfer.setData('text/plain', card.id);
     });
 
-    // Toque para mobile
+    // TOUCH/CELL
     card.addEventListener('click', () => {
-      document.querySelectorAll('.carta').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
+      if (selectedCard) selectedCard.classList.remove('selecionada');
+      selectedCard = card;
+      card.classList.add('selecionada');
     });
 
     container.appendChild(card);
   });
 }
 
-// Áreas de drop
 document.querySelectorAll('.drop-area').forEach(area => {
+  // DRAG & DROP
   area.addEventListener('dragover', e => e.preventDefault());
-
   area.addEventListener('drop', e => {
     e.preventDefault();
     const id = e.dataTransfer.getData('text/plain');
@@ -44,10 +47,13 @@ document.querySelectorAll('.drop-area').forEach(area => {
     processDrop(card, area);
   });
 
-  // Suporte a toque/click (mobile)
+  // TOUCH/CELL
   area.addEventListener('click', () => {
-    const selected = document.querySelector('.carta.selected');
-    if (selected) processDrop(selected, area);
+    if (selectedCard) {
+      processDrop(selectedCard, area);
+      selectedCard.classList.remove('selecionada');
+      selectedCard = null;
+    }
   });
 });
 
@@ -78,7 +84,7 @@ function updateCounts() {
 function checkWin() {
   if (afimCount + quadraticaCount + exponencialCount + logaritmicaCount === 50) {
     setTimeout(() => {
-      alert("Parabéns, você finalizou o jogo! Clique em RESET para jogar de novo.");
+      alert("Parabéns, você finalizou o jogo! Caso queira jogar novamente, clique no botão RESET.");
     }, 100);
   }
 }
@@ -89,5 +95,10 @@ function resetGame() {
   renderCards();
 }
 
-// Iniciar jogo
-renderCards();
+// Adiciona classe visual para toque
+document.addEventListener('DOMContentLoaded', () => {
+  const style = document.createElement('style');
+  style.innerHTML = `.selecionada { outline: 3px dashed #007bff; }`;
+  document.head.appendChild(style);
+  renderCards();
+});
