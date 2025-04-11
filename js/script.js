@@ -1,10 +1,4 @@
 const functions = [
-  { type: "afim", text: "f(x) = x - 9" },
-  { type: "afim", text: "f(x) = 2x" },
-  { type: "afim", text: "f(x) = -9x" },
-  { type: "afim", text: "f(x) = 6x - 14" },
-  { type: "afim", text: "f(x) = -√x" },
-  { type: "afim", text: "f(x) = 5x - 6" },
   { type: "afim", text: "f(x) = 2x + 1" },
   { type: "afim", text: "f(x) = 3x - 1" },
   { type: "afim", text: "f(x) = x - 3" },
@@ -13,6 +7,12 @@ const functions = [
   { type: "afim", text: "f(x) = 4x" },
   { type: "afim", text: "f(x) = √x - 1" },
   { type: "afim", text: "f(x) = 2x" },
+  { type: "afim", text: "f(x) = x - 9" },
+  { type: "afim", text: "f(x) = 2x" },
+  { type: "afim", text: "f(x) = -9x" },
+  { type: "afim", text: "f(x) = 6x - 14" },
+  { type: "afim", text: "f(x) = -√x" },
+  { type: "afim", text: "f(x) = 5x - 6" },
   { type: "quadratica", text: "f(x) = x²" },
   { type: "quadratica", text: "f(x) = x² + 1" },
   { type: "quadratica", text: "f(x) = x² - 4" },
@@ -51,20 +51,8 @@ const functions = [
   { type: "logaritmica", text: "f(x) = log₂(5x)" }
 ];
 
-let counts = {
-  afim: 0,
-  quadratica: 0,
-  exponencial: 0,
-  logaritmica: 0
-};
-
-let timerStarted = false;
-let timerInterval;
-let startTime;
-
-function shuffle(array) {
-  return array.sort(() => Math.random() - 0.5);
-}
+let counts = { afim: 0, quadratica: 0, exponencial: 0, logaritmica: 0 };
+let timerStarted = false, startTime = 0, timerInterval = null;
 
 function formatTime(t) {
   return t < 10 ? `0${t}` : t;
@@ -72,9 +60,9 @@ function formatTime(t) {
 
 function updateTimer() {
   const elapsed = Date.now() - startTime;
-  const min = Math.floor(elapsed / 60000);
-  const sec = Math.floor((elapsed % 60000) / 1000);
-  document.getElementById("timer").textContent = `Tempo: ${formatTime(min)}:${formatTime(sec)}`;
+  const minutes = Math.floor(elapsed / 60000);
+  const seconds = Math.floor((elapsed % 60000) / 1000);
+  document.getElementById("timer").textContent = `Tempo: ${formatTime(minutes)}:${formatTime(seconds)}`;
 }
 
 function startTimer() {
@@ -96,10 +84,10 @@ function resetTimer() {
 }
 
 function updateCounts() {
-  document.getElementById('afimCount').textContent = `${counts.afim}/14`;
-  document.getElementById('quadraticaCount').textContent = `${counts.quadratica}/14`;
-  document.getElementById('exponencialCount').textContent = `${counts.exponencial}/11`;
-  document.getElementById('logaritmicaCount').textContent = `${counts.logaritmica}/11`;
+  document.getElementById("afimCount").textContent = `${counts.afim}/14`;
+  document.getElementById("quadraticaCount").textContent = `${counts.quadratica}/14`;
+  document.getElementById("exponencialCount").textContent = `${counts.exponencial}/11`;
+  document.getElementById("logaritmicaCount").textContent = `${counts.logaritmica}/11`;
 }
 
 function checkWin() {
@@ -107,17 +95,17 @@ function checkWin() {
   if (total === 50) {
     stopTimer();
     setTimeout(() => {
-      alert("Parabéns, você finalizou o jogo! Caso queira jogar novamente, clique no botão RESET.");
+      alert("Você finalizou o jogo!");
     }, 300);
   }
 }
 
 function renderCards() {
-  const container = document.getElementById('cardContainer');
-  container.innerHTML = '';
-  shuffle(functions).forEach((func, i) => {
-    const card = document.createElement('div');
-    card.className = 'carta';
+  const container = document.getElementById("cardContainer");
+  container.innerHTML = "";
+  functions.sort(() => Math.random() - 0.5).forEach(func => {
+    const card = document.createElement("div");
+    card.className = "carta";
     card.textContent = func.text;
     card.dataset.type = func.type;
     container.appendChild(card);
@@ -128,42 +116,30 @@ function resetGame() {
   for (let key in counts) counts[key] = 0;
   updateCounts();
   renderCards();
-  setupDragDrop();
+  setupSortable();
   resetTimer();
 }
 
-function setupDragDrop() {
-  const container = document.getElementById('cardContainer');
-  const dropAreas = document.querySelectorAll('.drop-area');
+function setupSortable() {
+  const container = document.getElementById("cardContainer");
+  const dropAreas = document.querySelectorAll(".drop-area");
 
-  // Área das cartas (sortable mas sem aceitar drop)
-  Sortable.create(container, {
-    group: {
-      name: 'cards',
-      pull: 'clone',
-      put: false
-    },
-    animation: 150,
-    onStart: () => startTimer()
-  });
-
-  // Áreas de destino
   dropAreas.forEach(area => {
     Sortable.create(area, {
-      group: 'cards',
+      group: "shared",
       animation: 150,
-      onAdd: (evt) => {
+      onAdd: function (evt) {
         const card = evt.item;
-        const cardType = card.dataset.type;
-        const areaType = area.dataset.area;
+        const correctType = card.dataset.type;
+        const targetType = area.dataset.area;
 
-        if (cardType === areaType) {
+        if (correctType === targetType) {
           card.remove();
-          counts[areaType]++;
+          counts[targetType]++;
           updateCounts();
           checkWin();
         } else {
-          // Volta pra área original se errar
+          // devolve se errado
           container.appendChild(card);
         }
 
@@ -171,11 +147,17 @@ function setupDragDrop() {
       }
     });
   });
+
+  Sortable.create(container, {
+    group: "shared",
+    animation: 150
+  });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   renderCards();
-  setupDragDrop();
+  setupSortable();
   updateCounts();
   resetTimer();
 });
+
