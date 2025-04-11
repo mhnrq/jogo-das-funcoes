@@ -108,6 +108,7 @@ function renderCards() {
     card.className = "carta";
     card.textContent = func.text;
     card.dataset.type = func.type;
+    card.setAttribute("draggable", "true"); 
     container.appendChild(card);
   });
 }
