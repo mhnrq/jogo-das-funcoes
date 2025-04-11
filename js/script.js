@@ -133,7 +133,7 @@ function checkWin() {
   if (afimCount + quadraticaCount + exponencialCount + logaritmicaCount === 50) {
     stopTimer();
     setTimeout(() => {
-      alert("Parabéns, você finalizou o jogo! Caso queira jogar novamente, clique no botão RESET.");
+      alert("Parabéns, você finalizou o jogo!\nCaso queira jogar novamente, clique no botão RESET.");
     }, 100);
   }
 }
