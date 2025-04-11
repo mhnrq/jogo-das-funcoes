@@ -96,3 +96,10 @@ header {
   opacity: 0.4;
   background-color: #ccc;
 }
+
+#timer {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
