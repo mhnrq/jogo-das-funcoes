@@ -72,16 +72,24 @@ function renderCards() {
 
     // DRAG & DROP
     card.draggable = true;
-    card.addEventListener('dragstart', e => {
-      e.dataTransfer.setData('text/plain', card.id);
-    });
+   card.addEventListener('dragstart', e => {
+  e.dataTransfer.setData('text/plain', card.id);
+  if (!timerStarted) {
+    startTimer();
+    timerStarted = true;
+  }
+});
 
     // TOUCH/CELL
     card.addEventListener('click', () => {
-      if (selectedCard) selectedCard.classList.remove('selecionada');
-      selectedCard = card;
-      card.classList.add('selecionada');
-    });
+  if (!timerStarted) {
+    startTimer();
+    timerStarted = true;
+  }
+  if (selectedCard) selectedCard.classList.remove('selecionada');
+  selectedCard = card;
+  card.classList.add('selecionada');
+});
 
     container.appendChild(card);
   });
