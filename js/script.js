@@ -152,3 +152,34 @@ document.addEventListener('DOMContentLoaded', () => {
   document.head.appendChild(style);
   renderCards();
 });
+
+let timerInterval;
+let startTime;
+let timerStarted = false;
+
+function startTimer() {
+  startTime = Date.now();
+  timerInterval = setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
+  const elapsedTime = Date.now() - startTime;
+  const minutes = Math.floor(elapsedTime / 60000);
+  const seconds = Math.floor((elapsedTime % 60000) / 1000);
+  document.getElementById('timer').textContent = `Tempo: ${formatTime(minutes)}:${formatTime(seconds)}`;
+}
+
+function formatTime(time) {
+  return time < 10 ? `0${time}` : time;
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  document.getElementById('timer').textContent = 'Tempo: 00:00';
+  timerStarted = false;
+}
+
