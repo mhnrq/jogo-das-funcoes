@@ -71,8 +71,7 @@ function renderCards() {
     card.id = 'card-' + i;
 
     // DRAG & DROP
-    card.draggable = true;
-   card.addEventListener('dragstart', e => {
+    card.addEventListener('dragstart', e => {
   e.dataTransfer.setData('text/plain', card.id);
   if (!timerStarted) {
     startTimer();
